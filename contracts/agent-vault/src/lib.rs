@@ -686,11 +686,6 @@ mod tests {
         BytesN::<64>::from_array(env, &sig.to_bytes())
     }
 
-    fn event_topic_matches(env: &Env, topic: soroban_sdk::Val, expected: &Symbol) -> bool {
-        let sym: Symbol = topic.into_val(env);
-        sym == *expected
-    }
-
     fn setup(env: &Env) -> (AgentVaultClient<'_>, SigningKey, Address, Address) {
         let admin = Address::generate(env);
         let (agent_sk, agent_pk) = gen_keypair(env);
@@ -1252,7 +1247,7 @@ mod tests {
                 *addr == vault_id
                     && topics
                         .get(0)
-                        .map_or(false, |t| Symbol::from_val(&env, &t) == evt_name)
+                        .is_some_and(|t| Symbol::from_val(&env, &t) == evt_name)
             })
             .collect();
 
@@ -1305,7 +1300,7 @@ mod tests {
                 *addr == vault_id
                     && topics
                         .get(0)
-                        .map_or(false, |t| Symbol::from_val(&env, &t) == evt_name)
+                        .is_some_and(|t| Symbol::from_val(&env, &t) == evt_name)
             })
             .last()
             .expect("expected at least one payment_authorized event");
@@ -1338,7 +1333,7 @@ mod tests {
                 *addr == vault_id
                     && topics
                         .get(0)
-                        .map_or(false, |t| Symbol::from_val(&env, &t) == evt_name)
+                        .is_some_and(|t| Symbol::from_val(&env, &t) == evt_name)
             })
             .count();
         assert_eq!(
@@ -1393,7 +1388,7 @@ mod tests {
                 *addr == vault_id
                     && topics
                         .get(0)
-                        .map_or(false, |t| Symbol::from_val(&env, &t) == evt_name)
+                        .is_some_and(|t| Symbol::from_val(&env, &t) == evt_name)
             })
             .collect();
         assert_eq!(
@@ -1494,7 +1489,7 @@ mod tests {
                 *addr == vault_id
                     && topics
                         .get(0)
-                        .map_or(false, |t| Symbol::from_val(&env, &t) == evt_name)
+                        .is_some_and(|t| Symbol::from_val(&env, &t) == evt_name)
             })
             .collect();
         assert_eq!(
@@ -2600,7 +2595,7 @@ mod tests {
             .iter()
             .filter(|(address, topics, _)| {
                 *address == vault_id
-                    && topics.get(0).map_or(false, |topic| {
+                    && topics.get(0).is_some_and(|topic| {
                         Symbol::from_val(&env, &topic) == Symbol::new(&env, EVT_UPGRADED)
                     })
             })
@@ -2850,7 +2845,7 @@ mod tests {
                 *addr == vault_id
                     && topics
                         .get(0)
-                        .map_or(false, |t| Symbol::from_val(&env, &t) == evt)
+                        .is_some_and(|t| Symbol::from_val(&env, &t) == evt)
             })
             .collect();
         assert_eq!(
